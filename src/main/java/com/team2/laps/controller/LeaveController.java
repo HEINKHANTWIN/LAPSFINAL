@@ -6,6 +6,7 @@ import javax.validation.Valid;
 import com.team2.laps.model.Leave;
 import com.team2.laps.model.LeaveStatus;
 import com.team2.laps.payload.ApiResponse;
+import com.team2.laps.repository.LeaveRepository;
 import com.team2.laps.service.LeaveService;
 import com.team2.laps.service.UserService;
 
@@ -23,6 +24,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/leaves")
 public class LeaveController {
+	
+    @Autowired
+    LeaveRepository leaveRepository;
+    
     @Autowired
     LeaveService leaveService;
 
@@ -46,14 +51,16 @@ public class LeaveController {
         return ResponseEntity.ok(leaveService.createOrUpdateLeave(leave, isManager));
     }
     
-//    @PostMapping
-//    @RolesAllowed({ "ROLE_ADMINISTRATIVE_STAFF", "ROLE_PROFESSIONAL_STAFF", "ROLE_MANAGER" })
-//    public ResponseEntity<?> createOrUpdateLeave(@Valid @RequestBody Leave leave, Authentication authentication) {
-//        boolean isManager = authentication.getAuthorities().stream()
-//                .anyMatch(a -> a.getAuthority().equals("ROLE_MANAGER"));
-//        leave.setUser(userService.getCurrentUser());
-//        return ResponseEntity.ok(leaveService.createOrUpdateLeave(leave, isManager));
-//    }
+    @PostMapping("/{id}/{leaveStatus}")
+    @RolesAllowed("ROLE_MANAGER")
+    public ResponseEntity<?> approveOrRejectLeave(@PathVariable String id, @PathVariable LeaveStatus leaveStatus,
+            Authentication authentication) {
+        boolean isManager = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_MANAGER"));
+        Leave leave = leaveRepository.findById(id).get();
+        leave.setStatus(leaveStatus);
+        return ResponseEntity.ok(leaveService.createOrUpdateLeave(leave, isManager));
+    }
     
     @DeleteMapping("/{id}/{leaveStatus}")
     @RolesAllowed({ "ROLE_ADMINISTRATIVE_STAFF", "ROLE_PROFESSIONAL_STAFF" })

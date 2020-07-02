@@ -1,53 +1,4 @@
 var dataTable;
-function edit_action(this_el, item_id) {
-	$("#item_id").val(item_id);
-	var tr_el = this_el.closest("tr");
-	var row = dataTable.row(tr_el);
-	var row_data = row.data();
-	$.fn.datetimepicker.Constructor.Default = $.extend(
-		{},
-		$.fn.datetimepicker.Constructor.Default,
-		{
-			icons: {
-				time: "fa fa-clock",
-				date: "fa fa-calendar",
-				up: "fa fa-arrow-up",
-				down: "fa fa-arrow-down",
-				previous: "fa fa-chevron-left",
-				next: "fa fa-chevron-right",
-				today: "fa fa-calendar-check-o",
-				clear: "fa fa-trash",
-				close: "fa fa-times",
-			},
-			format: "MM/DD/YYYY HH",
-			enabledHours: [8, 13],
-			locale: "sg",
-		}
-	);
-
-	$("#startDatetimepicker").datetimepicker({
-		daysOfWeekDisabled: [0, 6],
-		minDate: moment(row_data.startDate, "MM/DD/YYYY HH"),
-		defaultDate: moment(row_data.startDate, "MM/DD/YYYY HH"),
-		format: "MM/DD/YYYY HH",
-	});
-	$("#endDatetimepicker").datetimepicker({
-		daysOfWeekDisabled: [0, 6],
-		defaultDate: moment(row_data.endDate, "MM/DD/YYYY HH"),
-		format: "MM/DD/YYYY HH",
-	});
-	$("#startDatetimepicker").on("change.datetimepicker", function (e) {
-		$("#endDatetimepicker").datetimepicker("minDate", e.date);
-	});
-	$("#endDatetimepicker").on("change.datetimepicker", function (e) {
-		$("#startDatetimepicker").datetimepicker("maxDate", e.date);
-	});
-
-	$("#leave-type").val(row_data.leaveType);
-	$("#reason").val(row_data.reason);
-	$("#work-dissemination").val(row_data.workDissemination);
-	$("#contact-details").val(row_data.contactDetails);
-}
 
 function approve_action(item_id) {
 	bootbox.confirm({
@@ -65,8 +16,8 @@ function approve_action(item_id) {
 		callback: function (result) {
 			if (result) {
 				$.ajax({
-					type: "DELETE",
-					url: `/api/leaves/${item_id}/DELETED`,
+					type: "POST",
+					url: `/api/leaves/${item_id}/APPROVED`,
 					headers: {
 						Authorization:
 							"Bearer " + localStorage.getItem("accessToken"),
@@ -82,9 +33,9 @@ function approve_action(item_id) {
 	});
 }
 
-function cancel_action(item_id) {
+function reject_action(item_id) {
 	bootbox.confirm({
-		message: "Are you sure you want to cancel application?",
+		message: "Are you sure you want to reject application?",
 		buttons: {
 			confirm: {
 				label: "Yes",
@@ -98,8 +49,8 @@ function cancel_action(item_id) {
 		callback: function (result) {
 			if (result) {
 				$.ajax({
-					type: "DELETE",
-					url: `/api/leaves/${item_id}/CANCELED`,
+					type: "POST",
+					url: `/api/leaves/${item_id}/REJECTED`,
 					headers: {
 						Authorization:
 							"Bearer " + localStorage.getItem("accessToken"),
@@ -153,12 +104,12 @@ function initDataTable() {
 				className: "all text-center",
 				render: function (data, type, row, meta) {
 					return `<div style="display:block">
-								<button onclick="approve_action(this, '${row.id}')" type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editModal" style="margin:3px">
-									<i class="fa fa-edit"></i> 
+								<button onclick="approve_action('${row.id}')" type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modal_delete" style="margin:3px">
+									<i class="fa fa-check"></i>
 										Approve
 								</button>
-								<button onclick="delete_action('${row.id}')" type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#modal_delete" style="margin:3px">
-									<i class="fa fa-backspace"></i>
+								<button onclick="reject_action('${row.id}')" type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#modal_delete" style="margin:3px">
+									<i class="fa fa-ban"></i>
 										Reject
 								</button>
 							</div>`;
