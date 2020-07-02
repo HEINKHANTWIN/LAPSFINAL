@@ -33,6 +33,7 @@ public class UserController {
 	}
 
 	@PostMapping("/signup")
+	@RolesAllowed("ROLE_ADMIN")
 	public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
 		return ResponseEntity.ok(userService.registerUser(signUpRequest));
 	}
