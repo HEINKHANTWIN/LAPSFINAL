@@ -45,7 +45,16 @@ public class LeaveController {
         leave.setUser(userService.getCurrentUser());
         return ResponseEntity.ok(leaveService.createOrUpdateLeave(leave, isManager));
     }
-
+    
+//    @PostMapping
+//    @RolesAllowed({ "ROLE_ADMINISTRATIVE_STAFF", "ROLE_PROFESSIONAL_STAFF", "ROLE_MANAGER" })
+//    public ResponseEntity<?> createOrUpdateLeave(@Valid @RequestBody Leave leave, Authentication authentication) {
+//        boolean isManager = authentication.getAuthorities().stream()
+//                .anyMatch(a -> a.getAuthority().equals("ROLE_MANAGER"));
+//        leave.setUser(userService.getCurrentUser());
+//        return ResponseEntity.ok(leaveService.createOrUpdateLeave(leave, isManager));
+//    }
+    
     @DeleteMapping("/{id}/{leaveStatus}")
     @RolesAllowed({ "ROLE_ADMINISTRATIVE_STAFF", "ROLE_PROFESSIONAL_STAFF" })
     public ResponseEntity<?> deleteOrCancelLeave(@PathVariable String id, @PathVariable LeaveStatus leaveStatus,

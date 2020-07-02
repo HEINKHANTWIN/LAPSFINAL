@@ -49,9 +49,9 @@ function edit_action(this_el, item_id) {
 	$("#contact-details").val(row_data.contactDetails);
 }
 
-function delete_action(item_id) {
+function approve_action(item_id) {
 	bootbox.confirm({
-		message: "Are you sure you want to delete application?",
+		message: "Are you sure you want to approve application?",
 		buttons: {
 			confirm: {
 				label: "Yes",
@@ -153,17 +153,13 @@ function initDataTable() {
 				className: "all text-center",
 				render: function (data, type, row, meta) {
 					return `<div style="display:block">
-								<button onclick="edit_action(this, '${row.id}')" type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editModal" style="margin:3px">
+								<button onclick="approve_action(this, '${row.id}')" type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editModal" style="margin:3px">
 									<i class="fa fa-edit"></i> 
-										Edit
+										Approve
 								</button>
 								<button onclick="delete_action('${row.id}')" type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#modal_delete" style="margin:3px">
 									<i class="fa fa-backspace"></i>
-										Delete
-								</button>
-								<button onclick="cancel_action('${row.id}')" type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#modal_delete" style="margin:3px">
-									<i class="fa fa-ban"></i>
-										Cancel
+										Reject
 								</button>
 							</div>`;
 				},
